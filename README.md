@@ -253,7 +253,7 @@ Confirmación de los cambios realizados:
 ```bash
 $ git commit -a -m "Probando diff"
 ```
-**
+
 ### Segunda prueba de diferencias
 Se añade la línea `siete` al archivo `texto.txt`:
 ```bash
@@ -451,4 +451,78 @@ Updating 2588973..a8f1b92
 Fast-forward
  Hola.java | 1 +
  1 file changed, 1 insertion(+)
+```
+
+---
+
+## 9. Eliminar y quitar de seguimiento (`git rm` y `git reset`)
+
+### Eliminación de archivos gestionados (`git rm`)
+Se elimina el archivo `importante~` del seguimiento de Git y del disco:
+```bash
+$ git rm importante~
+$ git commit -m "Eliminado archivo importante~ del seguimiento"
+```
+**Salida obtenida:**
+```text
+rm 'importante~'
+[master f81a3d9] Eliminado archivo importante~ del seguimiento
+ 1 file changed, 0 insertions(+), 0 deletions(-)
+ delete mode 100644 importante~
+```
+
+### Retirar archivos del área de preparación (`git reset HEAD`)
+Prueba de preparación y cancelación del estado preparado en un archivo temporal:
+```bash
+$ touch prueba.tmp
+$ git add prueba.tmp
+$ git status
+```
+**Salida obtenida:**
+```text
+On branch master
+Changes to be committed:
+  (use "git restore --staged <file>..." to unstage)
+	new file:   prueba.tmp
+```
+
+Se retira del área de preparación sin eliminar el archivo del disco:
+```bash
+$ git reset HEAD prueba.tmp
+$ git status
+```
+**Salida obtenida:**
+```text
+Unstaged changes after reset:
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	prueba.tmp
+```
+
+---
+
+## 10. Repositorios remotos (`git remote` y `git push`)
+
+### Vinculación del repositorio local con GitHub
+Se enlaza el repositorio local con el repositorio remoto alojado en GitHub asignándole el alias `origin`:
+```bash
+$ git remote add origin https://github.com/jorgemoredaa/prueba_git.git
+```
+
+### Subida de commits al servidor remoto (`git push`)
+Se sube la rama principal `master` al repositorio remoto de GitHub estableciendo el seguimiento ascendente (`-u`):
+```bash
+$ git push -u origin master
+```
+**Salida obtenida:**
+```text
+Enumerating objects: 22, done.
+Counting objects: 100% (22/22), done.
+Delta compression using up to 8 threads
+Compressing objects: 100% (18/18), done.
+Writing objects: 100% (22/22), 2.15 KiB | 2.15 MiB/s, done.
+Total 22 (delta 6), reused 0 (delta 0), pack-reused 0
+To https://github.com/jorgemoredaa/prueba_git.git
+ * [new branch]      master -> master
+Branch 'master' set up to track remote branch 'master' from 'origin'.
 ```
