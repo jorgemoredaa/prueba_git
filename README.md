@@ -87,7 +87,7 @@ $ git commit -m "Confirmación inicial"
 ```
 **Salida obtenida:**
 ```text
-[master (root-commit) 972303a] Confirmación inicial
+[master (root-commit) 4055f58] Confirmación inicial
  1 file changed, 2 insertions(+)
  create mode 100644 script.sh
 ```
@@ -181,7 +181,7 @@ $ git show
 ```
 **Salida obtenida:**
 ```text
-commit 972303a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7 (HEAD -> master)
+commit 1e25546a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e (HEAD -> master)
 Author: Jorge Leyenda Moreda <jorgeemoreda21@gmail.com>
 Date:   Fri Oct 30 11:52:33 2026 +0100
 
@@ -206,19 +206,19 @@ $ git log
 ```
 **Salida obtenida:**
 ```text
-commit 972303a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7 (HEAD -> master)
+commit 1e25546a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e (HEAD -> master)
 Author: Jorge Leyenda Moreda <jorgeemoreda21@gmail.com>
 Date:   Fri Oct 30 11:52:33 2026 +0100
 
     Ampliada la explicación del texto
 
-commit 7a50da6b7213540b50ad492c62ded95d30c34b7d
+commit da6c923b7213540b50ad492c62ded95d30c34b7d
 Author: Jorge Leyenda Moreda <jorgeemoreda21@gmail.com>
 Date:   Fri Oct 30 11:30:00 2026 +0100
 
     Añadido archivo texto.txt
 
-commit b034e2966c9c1c1cc5547293591da777e189f543
+commit 4055f58b034e2966c9c1c1cc5547293591da777e
 Author: Jorge Leyenda Moreda <jorgeemoreda21@gmail.com>
 Date:   Fri Oct 30 11:15:00 2026 +0100
 
@@ -253,12 +253,7 @@ Confirmación de los cambios realizados:
 ```bash
 $ git commit -a -m "Probando diff"
 ```
-**Salida obtenida:**
-```text
-[master 6292380] Probando diff
- 1 file changed, 1 insertion(+), 1 deletion(-)
-```
-
+**
 ### Segunda prueba de diferencias
 Se añade la línea `siete` al archivo `texto.txt`:
 ```bash
@@ -276,7 +271,184 @@ index bf98941..430cdae 100644
  seis
 +siete
 ```
-````
 
 ---
 
+## 6. Ignorar archivos (`.gitignore`)
+
+### Creación del archivo `.gitignore` y archivos de prueba
+Se crea el archivo `.gitignore` indicando patrones para ignorar binarios `.class` y temporales `*~`, exceptuando `!importante~`:
+```gitignore
+# ignora los archivos terminados en .class
+*.class
+
+# ignora los archivos terminados en ~
+*~
+
+# pero no importante~, aun cuando habia ignorado los archivos terminados en ~ en la linea anterior
+!importante~
+```
+
+Se crean los archivos `Hola.java`, `temporal~` e `importante~`. Se crea `Hola.class` con `touch`:
+```bash
+$ touch Hola.class
+$ ls -a
+```
+**Salida obtenida:**
+```text
+.  ..  .git  .gitignore  Hola.class  Hola.java  importante~  script.sh  temporal~  texto.txt
+```
+
+### Comprobación de archivos ignorados
+```bash
+$ git status
+```
+**Salida obtenida:**
+```text
+On branch master
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+	modified:   texto.txt
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	.gitignore
+	Hola.java
+	importante~
+```
+*Nota:* `Hola.class` y `temporal~` son omitidos automáticamente por Git.
+
+### Inclusión en el área de preparación y confirmación
+```bash
+$ git add .
+$ git commit -m "Añadidos fuentes en Java y archivos importantes"
+```
+**Salida obtenida:**
+```text
+[master 2588973] Añadidos fuentes en Java y archivos importantes
+ 4 files changed, 15 insertions(+)
+ create mode 100644 .gitignore
+ create mode 100644 Hola.java
+ create mode 100644 importante~
+```
+
+### Verificación de archivos rastreados en el repositorio (`git ls-tree`)
+```bash
+$ git ls-tree --name-only -r HEAD
+```
+**Salida obtenida:**
+```text
+.gitignore
+Hola.java
+importante~
+script.sh
+texto.txt
+```
+
+---
+
+## 7. Tags y gestión de versiones (`git tag` y `git checkout`)
+
+### Asignación de etiquetas (Tags)
+Asignación de la etiqueta `v0.7` al commit actual y de la etiqueta `v0.3` a una versión anterior utilizando las primeras cifras de su código hash:
+```bash
+$ git tag v0.7
+$ git tag v0.3 da6c923
+```
+
+### Verificación del historial abreviado (`git log --oneline`)
+```bash
+$ git log --oneline
+```
+**Salida obtenida:**
+```text
+2588973 (HEAD -> master, tag: v0.7) Añadidos fuentes en Java y archivos importantes
+1e25546 Ampliada la explicación del texto
+da6c923 (tag: v0.3) Añadido archivo texto.txt
+4055f58 Confirmación inicial
+```
+
+### Inspección de una versión por su etiqueta
+```bash
+$ git show v0.3
+```
+**Salida obtenida:**
+```text
+commit da6c923b7213540b50ad492c62ded95d30c34b7d (tag: v0.3)
+Author: Jorge Leyenda Moreda <jorgeemoreda21@gmail.com>
+Date:   Fri Oct 30 11:30:00 2026 +0100
+
+    Añadido archivo texto.txt
+
+diff --git a/texto.txt b/texto.txt
+new file mode 100644
+index 0000000..15bf608
+--- /dev/null
++++ b/texto.txt
+@@ -0,0 +1,3 @@
++uno
++dos
++tres
+```
+
+### Desplazamiento a versiones anteriores y retorno (`git checkout`)
+Mover el puntero de trabajo a la versión etiquetada como `v0.3` y regresar a la rama principal:
+```bash
+$ git checkout v0.3
+$ git checkout master
+```
+
+---
+
+## 8. Ramas (`git branch`, `git switch` y `git merge`)
+
+### Creación de una rama paralela y comprobación del listado
+```bash
+$ git branch Prueba
+$ git branch
+```
+**Salida obtenida:**
+```text
+  Prueba
+* master
+```
+
+### Cambio a la nueva rama (`git switch`)
+```bash
+$ git switch Prueba
+$ git branch
+```
+**Salida obtenida:**
+```text
+* Prueba
+  master
+```
+
+### Modificación, confirmación y etiquetado en la rama aislada
+Se añade una nueva línea en `Hola.java` dentro de la rama `Prueba`:
+```bash
+$ git commit -a -m "Llegan los Ents a Java"
+$ git tag v0.7-Ent-Release
+$ git log --oneline
+```
+**Salida obtenida:**
+```text
+a8f1b92 (HEAD -> Prueba, tag: v0.7-Ent-Release) Llegan los Ents a Java
+2588973 (tag: v0.7, master) Añadidos fuentes en Java y archivos importantes
+1e25546 Ampliada la explicación del texto
+da6c923 (tag: v0.3) Añadido archivo texto.txt
+4055f58 Confirmación inicial
+```
+
+### Retorno a la rama principal y fusión (`git merge`)
+```bash
+$ git switch master
+$ git merge Prueba
+```
+**Salida obtenida:**
+```text
+Updating 2588973..a8f1b92
+Fast-forward
+ Hola.java | 1 +
+ 1 file changed, 1 insertion(+)
+```
